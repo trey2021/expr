@@ -150,8 +150,13 @@ static int evaluate_expr(ExprQueue *pInQueue, int *pResult)
             case OPERATION:
             {                
                 ExprElement *pNewElement = malloc(sizeof(ExprElement));
-                int b = stack_pop(&stack)->value.value;
-                int a = stack_pop(&stack)->value.value;
+                ExprElement *pEB = stack_pop(&stack);
+                ExprElement *pEA = stack_pop(&stack);
+                int b = pEB->value.value;
+                int a = pEA->value.value;
+
+                free(pEA);
+                free(pEB);
 
                 pNewElement->value.value = pElement->value.pOperation->func(a, b);
                 pNewElement->type = INT;
