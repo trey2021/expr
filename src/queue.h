@@ -21,5 +21,6 @@ void queue_enqueue(ExprQueue *pQueue, ExprElement *pElement);
 ExprElement *queue_dequeue(ExprQueue *pQueue);
 int queue_isempty(ExprQueue *pQueue);
 void queue_clear(ExprQueue *pQueue);
+void queue_free(ExprQueue *pQueue);
 
 #endif

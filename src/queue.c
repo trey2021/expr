@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "queue.h"
+#include <stdio.h>
 
 void queue_init(ExprQueue *pQueue)
 {
@@ -21,7 +22,7 @@ ExprElement *queue_dequeue(ExprQueue *pQueue)
     ExprQueueNode *pEnd = pQueue->pHead;
     ExprElement *pResult = NULL; 
 
-    if (pEnd != NULL)
+    if (pEnd != NULL && pEnd->pNext != NULL)
     {
         while (pEnd->pNext->pNext != NULL)
         {
@@ -47,4 +48,10 @@ void queue_clear(ExprQueue *pQueue)
     {
         queue_dequeue(pQueue);
     }
+}
+
+void queue_free(ExprQueue *pQueue)
+{
+	queue_clear(pQueue);
+	free(pQueue->pHead);
 }

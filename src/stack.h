@@ -17,5 +17,7 @@ void stack_push(ExprStack *pStack, ExprElement *pElement);
 ExprElement *stack_pop(ExprStack *pStack);
 ExprElement *stack_peek(ExprStack *pStack);
 int stack_isempty(ExprStack *pStack);
+void stack_clear(ExprStack *pStack);
+void stack_free(ExprStack *pStack);
 
 #endif

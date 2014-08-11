@@ -37,3 +37,14 @@ int stack_isempty(ExprStack *pStack)
 {
     return pStack->size == 0;
 }
+
+void stack_clear(ExprStack *pStack)
+{
+	pStack->size = 0;
+}
+
+void stack_free(ExprStack *pStack)
+{
+	free(pStack->pContents);
+}
+

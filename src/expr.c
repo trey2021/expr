@@ -213,5 +213,8 @@ int main(int argc, char *argv[])
         }
     }
 
+	stack_free(&stack);
+	queue_free(&queue);
+
     return exitCode;
 }
