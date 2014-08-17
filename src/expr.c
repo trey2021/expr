@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -7,30 +8,39 @@
 #include "operations.h"
 
 static int is_number(char *pValue);
-static int create_expr_element(ExprElement *pElement, char *pValue, ExprOperation *pOperations);
+static int create_expr_element(ExprElement *pElement, char *pValue, 
+    ExprOperation *pOperations);
 static int is_lower_precedence(ExprOperation *pOpA, ExprOperation *pOpB);
-static int infix_to_postfix(int argc, char *argv[], ExprQueue *pOutQueue, ExprOperation *pOperations);
+static int infix_to_postfix(int argc, char *argv[], ExprQueue *pOutQueue, 
+    ExprOperation *pOperations);
 static int evaluate_expr(ExprQueue *pInQueue, int *pResult);
+
 
 static int is_number(char *pValue)
 {
     char *pValuePtr = pValue;
-    int foundPeriod = 0;
-   
-    for(; isdigit(*pValuePtr) || (!foundPeriod && (foundPeriod = *pValuePtr == '.')); pValuePtr++)
+    
+    if (*pValuePtr == '-' && *(pValuePtr + 1) != '\0')
+    {
+        pValuePtr++;
+    }
+
+    for(; isdigit(*pValuePtr); pValuePtr++)
         ;
 
     return *pValuePtr == '\0';
 }
 
-static int create_expr_element(ExprElement *pElement, char *pValue, ExprOperation *pOperations)
+static int create_expr_element(ExprElement *pElement, char *pValue, 
+    ExprOperation *pOperations)
 {
     int type = 0;
 
     if (is_number(pValue))
     {
         type = INT;
-        pElement->value.value = atoi(pValue);
+        pElement->value.intValue = atoi(pValue);
+        printf("%i\n", pElement->value.intValue);
     }
     else
     {
@@ -39,11 +49,11 @@ static int create_expr_element(ExprElement *pElement, char *pValue, ExprOperatio
         if (NULL != pOp)
         {
             type = OPERATION;
-            pElement->value.pOperation = pOp;
+            pElement->value.pOpValue = pOp;
         }
         else
         {
-            pElement->value.pValue = pValue;
+            pElement->value.pStrValue = pValue;
 
             if (*pValue == '(')
             {
@@ -67,7 +77,8 @@ static int is_lower_precedence(ExprOperation *pOpA, ExprOperation *pOpB)
         || pOpA->precedence < pOpB->precedence);
 }
 
-static int infix_to_postfix(int tokensCount, char *tokens[], ExprQueue *pOutQueue, ExprOperation *pOperations)
+static int infix_to_postfix(int tokensCount, char *tokens[], 
+    ExprQueue *pOutQueue, ExprOperation *pOperations)
 {
     int i = 0;
     int error = 0;
@@ -88,8 +99,8 @@ static int infix_to_postfix(int tokensCount, char *tokens[], ExprQueue *pOutQueu
                 break;
             case CLOSE_PAREN:
             {
-                ExprElement *pPeekElm = NULL;
-                for (pPeekElm = stack_peek(&stack);
+                ExprElement *pPeekElm = stack_peek(&stack);
+                for (;
                     pPeekElm != NULL && pPeekElm->type != OPEN_PAREN; 
                     pPeekElm = stack_peek(&stack))
                 {
@@ -101,12 +112,12 @@ static int infix_to_postfix(int tokensCount, char *tokens[], ExprQueue *pOutQueu
             }
             case OPERATION:
             {
-                ExprOperation *pOperation = pElement->value.pOperation; 
+                ExprOperation *pOperation = pElement->value.pOpValue; 
                 ExprElement *pPeekElm = NULL;
 
                 for (pPeekElm = stack_peek(&stack);
                     (pPeekElm != NULL && pPeekElm->type == OPERATION)
-                        && is_lower_precedence(pOperation, pPeekElm->value.pOperation);
+                        && is_lower_precedence(pOperation, pPeekElm->value.pOpValue);
                     pPeekElm = stack_peek(&stack))
                 {
                     queue_enqueue(pOutQueue, stack_pop(&stack));
@@ -116,7 +127,8 @@ static int infix_to_postfix(int tokensCount, char *tokens[], ExprQueue *pOutQueu
                 break;
             }
             default:
-                fprintf(stderr, "Error: token \'%s\' not a number or operation.\n", tokens[i]);
+                fprintf(stderr, "Error: token \'%s\' not a number or operation.\n", 
+                    tokens[i]);
                 queue_clear(pOutQueue);
                 error = 1;
                 break;
@@ -152,26 +164,26 @@ static int evaluate_expr(ExprQueue *pInQueue, int *pResult)
                 ExprElement *pNewElement = malloc(sizeof(ExprElement));
                 ExprElement *pEB = stack_pop(&stack);
                 ExprElement *pEA = stack_pop(&stack);
-                int b = pEB->value.value;
-                int a = pEA->value.value;
 
                 free(pEA);
                 free(pEB);
 
-                pNewElement->value.value = pElement->value.pOperation->func(a, b);
+                pNewElement->value.intValue = pElement->value.pOpValue->
+                    func(pEB->value.intValue, pEA->value.intValue);
                 pNewElement->type = INT;
 
                 stack_push(&stack, pNewElement);
                 break;
             }
             default:
-                fprintf(stderr, "Wtf did you do? Found %s on stack.\n", pElement->value.pValue);
+                fprintf(stderr, "Wtf did you do? Found %s on stack.\n", 
+                    pElement->value.pStrValue);
                 error = 1;
                 break;
         }
     }
 
-    *pResult = stack_pop(&stack)->value.value;
+    *pResult = stack_pop(&stack)->value.intValue;
     
     if (!stack_isempty(&stack))
     {
@@ -184,7 +196,6 @@ static int evaluate_expr(ExprQueue *pInQueue, int *pResult)
 
 int main(int argc, char *argv[])
 {
-    int i = 0;
     int exitCode = EXIT_FAILURE;
     ExprStack stack;
     ExprQueue queue;
@@ -213,8 +224,8 @@ int main(int argc, char *argv[])
         }
     }
 
-	stack_free(&stack);
-	queue_free(&queue);
+    stack_free(&stack);
+    queue_free(&queue);
 
     return exitCode;
 }

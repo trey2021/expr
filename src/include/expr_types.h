@@ -23,9 +23,9 @@ typedef struct
 {
     union 
     {
-        char *pValue;
-        ExprOperation *pOperation;
-        int value;
+        char *pStrValue;
+        ExprOperation *pOpValue;
+        int intValue;
     } value;
     ElementType type;
 } ExprElement;
