@@ -9,6 +9,9 @@ static int is_number(char *pValue);
 static int create_expr_element(ExprElement *pElement, char *pValue, 
     ExprOperation *pOperations);
 static int is_lower_precedence(ExprOperation *pOpA, ExprOperation *pOpB);
+static void pop_nested_expr(ExprQueue *pQueue, ExprStack *pStack);
+static void pop_lower_order_operations(ExprQueue *pQueue, ExprOperation *pOperation, 
+	ExprStack *pStack);
 
 static int is_number(char *pValue)
 {
