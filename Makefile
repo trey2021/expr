@@ -15,8 +15,15 @@ SOURCES := $(wildcard $(SOURCESDIR)/*.c)
 INCLUDES := $(wildcard $(INCLUDEDIR)/*.h) 
 OBJECTS := $(SOURCES:$(SOURCESDIR)/%.c=$(BINDIR)/%.o)
 
+.PHONY: all
+all: $(PROGRAM)
+
+.PHONY: debug
+debug: CFLAGS += -g
+debug: $(PROGRAM)
+
 $(PROGRAM): $(OBJECTS)
-	$(LINKER) -o $@ $(LIBS) $(LFLAGS) $(OBJECTS)
+	@$(LINKER) -o $@ $(LIBS) $(LFLAGS) $(OBJECTS)
 
 $(OBJECTS): $(BINDIR)/%.o : $(SOURCESDIR)/%.c
 	@$(CC) $(CFLAGS) -I $(INCLUDEDIR) -c $< -o $@
