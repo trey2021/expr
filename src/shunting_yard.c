@@ -119,11 +119,9 @@ int infix_to_postfix(int tokensCount, char *tokens[],
 				pop_nested_expr(pOutQueue, &stack);
                 break;
             case OPERATION:
-            {
 				pop_lower_order_operations(pOutQueue, pElement->value.pOpValue, &stack);
 				stack_push(&stack, pElement);
                 break;
-            }
             default:
                 fprintf(stderr, "Error: token \'%s\' not a number or operation.\n", 
                     tokens[i]);

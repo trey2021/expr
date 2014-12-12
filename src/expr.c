@@ -41,7 +41,7 @@ static int evaluate_expr(ExprQueue *pInQueue, int *pResult)
                 break;
             }
             default:
-                fprintf(stderr, "Wtf did you do? Found %s on stack.\n", 
+                fprintf(stderr, "ERROR: Found %s on stack.\n", 
                     pElement->value.pStrValue);
                 error = 1;
                 break;
