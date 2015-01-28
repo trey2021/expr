@@ -25,7 +25,7 @@ static int is_number(char *pValue)
 static int create_expr_element(ExprElement *pElement, char *pValue, 
     ExprOperation *pOperations)
 {
-    int type = 0;
+    int type = UNRECOGNIZED_TYPE;
 
     if (is_number(pValue))
     {
@@ -122,11 +122,12 @@ int infix_to_postfix(int tokensCount, char *tokens[],
 				pop_lower_order_operations(pOutQueue, pElement->value.pOpValue, &stack);
 				stack_push(&stack, pElement);
                 break;
+			case UNRECOGNIZED_TYPE:
             default:
                 fprintf(stderr, "Error: token \'%s\' not a number or operation.\n", 
                     tokens[i]);
                 queue_clear(pOutQueue);
-                error = 1;
+                error = 2;
                 break;
         }
     }

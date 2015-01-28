@@ -3,7 +3,8 @@
 
 typedef enum
 {
-    INT = 1,
+	UNRECOGNIZED_TYPE,
+    INT,
     OPERATION,
     OPEN_PAREN,
     CLOSE_PAREN
